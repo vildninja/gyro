@@ -105,12 +105,14 @@ namespace VildNinja.GyroPhone
             {
                 timer = Time.time + 0.0333f;
                 ms.Position = 0;
+                writer.Write(number);
                 WriteStatus();
                 NetworkTransport.Send(host, connection, state, data, (int) ms.Position, out error);
                 PhoneServer.TestError(error);
             }
 
-            text.text = "#" + number + " " + (isConnected ? "connected" : "searching") + "\nv" + vibrate;
+            if (text != null)
+                text.text = "#" + number + " " + (isConnected ? "connected" : "searching") + "\nv" + vibrate;
         }
 
         public void SetNumber(int n)
@@ -125,7 +127,6 @@ namespace VildNinja.GyroPhone
 
         public virtual void WriteStatus()
         {
-            Write(number);
             Write(Input.gyro.attitude);
             Write(Input.gyro.gravity);
             Write(Input.gyro.rotationRate);

@@ -121,12 +121,12 @@ namespace VildNinja.GyroPhone
                     break;
                 case NetworkEventType.BroadcastEvent:
 
-                    int port;
-                    var bi = NetworkTransport.GetBroadcastConnectionInfo(host, out port, out error);
+                    int cPort;
+                    var bi = NetworkTransport.GetBroadcastConnectionInfo(host, out cPort, out error);
                     TestError(error);
-                    NetworkTransport.Connect(host, bi, port, 0, out error);
+                    NetworkTransport.Connect(host, bi, cPort, 0, out error);
                     TestError(error);
-                    Debug.Log("Broadcast " + bi);
+                    Debug.Log("Broadcast " + bi + " - " + cPort);
 
                     break;
             }
@@ -144,6 +144,8 @@ namespace VildNinja.GyroPhone
                     txt += "gyroAtt " + phones[i].gyroAttitude + "\n";
                     txt += "gyroRot " + phones[i].gyroRotationRate + "\n";
                     txt += "gyroGrav " + phones[i].gyroGravity + "\n";
+                    txt += "rotation " + phones[i].rotation + "\n";
+                    txt += "position " + phones[i].position + "\n";
                 }
                 debugText.text = txt;
             }

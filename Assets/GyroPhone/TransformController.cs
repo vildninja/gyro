@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.IO;
 
 namespace VildNinja.GyroPhone
 {
@@ -9,7 +8,6 @@ namespace VildNinja.GyroPhone
         // sorry for horrible hack, but didn't want to break the flow
         public override void WriteStatus()
         {
-            Write(number);
             Write(transform.rotation); // gyro attitude
             Write(Input.gyro.gravity);
             Write(Input.gyro.rotationRate);
