@@ -22,7 +22,12 @@ namespace VildNinja.GyroPhone
             public Vector3 compassRawVector;
             public float compassMagneticHeading;
             public float compassTrueHeading;
+
+            public Quaternion rotation {get { return gyroAttitude; } }
+            public Vector3 position { get { return gyroUserAcceleration; } }
         }
+
+        public int port = 9112;
 
         public readonly Data[] phones = new Data[10];
         private readonly int[] clients = new int[10];
@@ -36,9 +41,8 @@ namespace VildNinja.GyroPhone
         private bool isConnected;
 
         public Text debugText = null;
-
-        public readonly byte[] broadcast = new byte[1];
-        public readonly byte[] data = new byte[1000];
+        
+        private readonly byte[] data = new byte[1000];
 
         private MemoryStream ms;
         private BinaryReader reader;
@@ -66,7 +70,7 @@ namespace VildNinja.GyroPhone
             reliable = config.AddChannel(QosType.ReliableSequenced);
             var topology = new HostTopology(config, 10);
 
-            host = NetworkTransport.AddHost(topology, 9112);
+            host = NetworkTransport.AddHost(topology, port);
             NetworkTransport.SetBroadcastCredentials(host, 1, 1, 0, out error);
 
             TestError(error);

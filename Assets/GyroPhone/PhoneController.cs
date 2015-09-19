@@ -10,6 +10,7 @@ namespace VildNinja.GyroPhone
     public class PhoneController : MonoBehaviour
     {
         public int number;
+        public int port = 9112;
 
         public Text text;
 
@@ -23,9 +24,8 @@ namespace VildNinja.GyroPhone
         private byte error;
 
         private bool isConnected;
-
-        public readonly byte[] broadcast = new byte[1000];
-        public readonly byte[] data = new byte[1000];
+        
+        private readonly byte[] data = new byte[1000];
 
         private MemoryStream ms;
         private BinaryReader reader;
@@ -39,6 +39,8 @@ namespace VildNinja.GyroPhone
         // Use this for initialization
         private void Start()
         {
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
             var config = new ConnectionConfig();
             state = config.AddChannel(QosType.Unreliable);
             reliable = config.AddChannel(QosType.ReliableSequenced);
@@ -50,7 +52,7 @@ namespace VildNinja.GyroPhone
             reader = new BinaryReader(ms);
             writer = new BinaryWriter(ms);
 
-            NetworkTransport.StartBroadcastDiscovery(host, 9112, 1, 1, 0, broadcast, 1, 2000, out error);
+            NetworkTransport.StartBroadcastDiscovery(host, port, 1, 1, 0, new byte[1], 1, 2000, out error);
             PhoneServer.TestError(error);
 
             Input.gyro.enabled = true;
@@ -86,7 +88,7 @@ namespace VildNinja.GyroPhone
                     break;
                 case NetworkEventType.DisconnectEvent:
                     isConnected = false;
-                    NetworkTransport.StartBroadcastDiscovery(host, 9112, 1, 1, 0, broadcast, 1, 10, out error);
+                    NetworkTransport.StartBroadcastDiscovery(host, port, 1, 1, 0, new byte[1], 1, 10, out error);
                     break;
                 case NetworkEventType.Nothing:
                     break;
@@ -121,28 +123,33 @@ namespace VildNinja.GyroPhone
             Handheld.Vibrate();
         }
 
-        public void WriteStatus()
+        public virtual void WriteStatus()
         {
-            writer.Write(number);
-            WriteQuaternion(Input.gyro.attitude);
-            WriteVector(Input.gyro.gravity);
-            WriteVector(Input.gyro.rotationRate);
-            WriteVector(Input.gyro.rotationRateUnbiased);
-            WriteVector(Input.gyro.userAcceleration);
-            WriteVector(Input.acceleration);
-            WriteVector(Input.compass.rawVector);
-            writer.Write(Input.compass.magneticHeading);
-            writer.Write(Input.compass.trueHeading);
+            Write(number);
+            Write(Input.gyro.attitude);
+            Write(Input.gyro.gravity);
+            Write(Input.gyro.rotationRate);
+            Write(Input.gyro.rotationRateUnbiased);
+            Write(Input.gyro.userAcceleration);
+            Write(Input.acceleration);
+            Write(Input.compass.rawVector);
+            Write(Input.compass.magneticHeading);
+            Write(Input.compass.trueHeading);
         }
 
-        private void WriteVector(Vector3 vec)
+        public void Write(float value)
+        {
+            writer.Write(value);
+        }
+
+        public void Write(Vector3 vec)
         {
             writer.Write(vec.x);
             writer.Write(vec.y);
             writer.Write(vec.z);
         }
 
-        private void WriteQuaternion(Quaternion qua)
+        public void Write(Quaternion qua)
         {
             writer.Write(qua.x);
             writer.Write(qua.y);
