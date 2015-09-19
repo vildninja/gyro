@@ -88,6 +88,7 @@ namespace VildNinja.GyroPhone
                     break;
                 case NetworkEventType.DisconnectEvent:
                     isConnected = false;
+                    vibrate = 0;
                     NetworkTransport.StartBroadcastDiscovery(host, port, 1, 1, 0, new byte[1], 1, 10, out error);
                     break;
                 case NetworkEventType.Nothing:

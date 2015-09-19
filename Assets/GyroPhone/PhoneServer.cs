@@ -151,11 +151,13 @@ namespace VildNinja.GyroPhone
             }
         }
 
+        [ContextMenu("vib on")]
         public void VibrateOne()
         {
             SetVibrate(1, 1);
         }
 
+        [ContextMenu("vib off")]
         public void StopVibrateOne()
         {
             SetVibrate(1, 0);
