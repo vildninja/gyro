@@ -60,6 +60,7 @@ namespace VildNinja.GyroPhone
         }
 
         private float timer = 0;
+        private float timeStep = 0.2f;
 
         // Update is called once per frame
         private void Update()
@@ -104,7 +105,7 @@ namespace VildNinja.GyroPhone
 
             if (Time.time > timer && isConnected)
             {
-                timer = Time.time + 0.0333f;
+                timer = Time.time + timeStep;
                 ms.Position = 0;
                 writer.Write(number);
                 WriteStatus();
@@ -119,6 +120,11 @@ namespace VildNinja.GyroPhone
         public void SetNumber(int n)
         {
             number = n;
+        }
+
+        public void SetFreq(int n)
+        {
+            timeStep = 1f/n;
         }
 
         public void DoVibrate(float value)
