@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -71,7 +72,7 @@ namespace VildNinja.GyroPhone
             var topology = new HostTopology(config, 10);
 
             host = NetworkTransport.AddHost(topology, port);
-            NetworkTransport.SetBroadcastCredentials(host, 1, 1, 0, out error);
+            NetworkTransport.SetBroadcastCredentials(host, 1, 1, 1, out error);
 
             TestError(error);
 
@@ -114,6 +115,10 @@ namespace VildNinja.GyroPhone
                     }
                     break;
                 case NetworkEventType.ConnectEvent:
+                    writer.Write("name");
+                    writer.Write(Environment.UserName);
+                    NetworkTransport.Send(host, rConn, reliable, data, (int) ms.Position, out error);
+                    TestError(error);
                     break;
                 case NetworkEventType.DisconnectEvent:
                     break;
@@ -166,6 +171,7 @@ namespace VildNinja.GyroPhone
         public void SetVibrate(int phone, float value)
         {
             ms.Position = 0;
+            writer.Write("vibrate");
             writer.Write(value);
             NetworkTransport.Send(host, clients[phone], reliable, data, 4, out error);
             TestError(error);

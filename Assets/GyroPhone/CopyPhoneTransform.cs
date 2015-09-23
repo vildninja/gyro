@@ -15,8 +15,13 @@ namespace VildNinja.GyroPhone
         private Transform parent;
         private Transform child;
         private PhoneServer server;
-        private Quaternion offset = Quaternion.identity;
         public float angle;
+
+        public Quaternion offset;
+        public Quaternion offsetInv;
+        public Quaternion attitude;
+        public Quaternion attitudeInv;
+
 
         public Conversion x = Conversion.X;
         public Conversion y = Conversion.Y;
@@ -37,18 +42,24 @@ namespace VildNinja.GyroPhone
         {
             var data = server.phones[number];
 
-            child.localRotation = data.gyroAttitude;
-            
+            attitude = data.gyroAttitude;
+            attitudeInv = Quaternion.Inverse(data.gyroAttitude);
+
+            transform.localRotation = offset * attitudeInv;
+
+            //child.localRotation = data.gyroAttitude;
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                parent.rotation = Quaternion.Inverse(data.gyroAttitude);
+                //parent.rotation = Quaternion.Inverse(data.gyroAttitude);
                 offset = data.gyroAttitude;
+                offset = Quaternion.Inverse(data.gyroAttitude);
                 angle = data.compassMagneticHeading;
             }
 
-            Vector3 gyro = child.eulerAngles;
-            Vector3 angles = new Vector3(GetAngle(gyro, x), GetAngle(gyro, y), GetAngle(gyro, z));
-            transform.localEulerAngles = angles;
+            //Vector3 gyro = child.eulerAngles;
+            //Vector3 angles = new Vector3(GetAngle(gyro, x), GetAngle(gyro, y), GetAngle(gyro, z));
+            //transform.localEulerAngles = angles;
         }
 
         private float GetAngle(Vector3 vec, Conversion axis)
